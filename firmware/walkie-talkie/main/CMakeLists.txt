@@ -1,0 +1,18 @@
+idf_component_register(
+    SRCS
+        "main.c"
+        "audio_i2s.c"
+        "espnow_protocol.c"
+        "ptt_button.c"
+    INCLUDE_DIRS
+        "."
+    REQUIRES
+        esp_wifi
+        esp_now
+        nvs_flash
+        driver
+        freertos
+        esp_ringbuf
+        esp_common
+        esp_timer
+)
