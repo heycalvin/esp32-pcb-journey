@@ -1,7 +1,7 @@
 # 🤖 小智 AI 硬件工程深度解析与实战学习手册
 
 本项目源自经典开源爆款项目——**小智 AI 聊天机器人（Xiaozhi AI Companion）** 硬件底板。  
-工程文件已经放置在当前目录下：[`ProPrj_AI-xiaozhi.epro`](file:///d:/code/sanbox/esp32-pcb-journey/hardware/01-xiaozhi-ai/ProPrj_AI-xiaozhi.epro)。
+工程文件已经放置在当前目录下：[`ProPrj_AI-xiaozhi.epro`](file:///d:/code/sanbox/esp32-pcb-journey/jlceda/hardware/01-xiaozhi-ai/ProPrj_AI-xiaozhi.epro)。
 
 ---
 
@@ -58,7 +58,7 @@
 ### 第一步：导入工程到嘉立创EDA
 1. 打开 **嘉立创EDA (专业版)** 客户端。
 2. 点击左上角 **文件 -> 打开 -> 打开工程 (或导入)**。
-3. 选择本地文件路径：`d:\code\sanbox\esp32-pcb-journey\hardware\01-xiaozhi-ai\ProPrj_AI-xiaozhi.epro`。
+3. 选择本地文件路径：`d:\code\sanbox\esp32-pcb-journey\jlceda\hardware\01-xiaozhi-ai\ProPrj_AI-xiaozhi.epro`。
 4. 此时左侧工程树中将完整呈现：
    - 📄 **原理图**：可双击打开查看各个元器件连接逻辑。
    - 🖲️ **PCB 板**：可双击打开查看顶层/底层走线、板框尺寸与铺铜。

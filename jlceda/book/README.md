@@ -49,5 +49,5 @@ mindmap
 ## 🎯 学习方法建议
 
 1. **左手开教程，右手开嘉立创EDA**：
-   - 打开工程文件 [`ProPrj_AI-xiaozhi.epro`](file:///d:/code/sanbox/esp32-pcb-journey/hardware/01-xiaozhi-ai/ProPrj_AI-xiaozhi.epro)。
+   - 打开工程文件 [`ProPrj_AI-xiaozhi.epro`](file:///d:/code/sanbox/esp32-pcb-journey/jlceda/hardware/01-xiaozhi-ai/ProPrj_AI-xiaozhi.epro)。
 2. **带着问题看**：每读完一章，就在嘉立创EDA的原理图或 PCB 视图中找到对应的器件和走线，亲眼看一看它是怎么连的。

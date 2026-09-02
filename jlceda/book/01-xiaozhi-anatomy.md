@@ -105,7 +105,7 @@ sequenceDiagram
 1. 启动 **嘉立创EDA (专业版)** 客户端。
 2. 点击菜单 **文件 -> 打开工程**。
 3. 浏览并选中本仓库中的文件：  
-   `d:\code\sanbox\esp32-pcb-journey\hardware\01-xiaozhi-ai\ProPrj_AI-xiaozhi.epro`
+   `d:\code\sanbox\esp32-pcb-journey\jlceda\hardware\01-xiaozhi-ai\ProPrj_AI-xiaozhi.epro`
 
 ---
 

@@ -1,0 +1,5 @@
+# KiCad 硬件工程文件存放目录
+# KiCad 工程 (*.kicad_pro / *.kicad_sch / *.kicad_pcb) 保存到此目录下的子文件夹中
+# 例如：
+# hardware/01-led-minimal-board/
+# hardware/02-esp32-core-board/
