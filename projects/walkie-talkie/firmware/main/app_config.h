@@ -16,7 +16,7 @@ extern "C" {
 #define APP_MODE_WALKIE_TALKIE      0
 #define APP_MODE_LOCAL_LOOPBACK     1
 
-#define CURRENT_APP_MODE            APP_MODE_WALKIE_TALKIE
+#define CURRENT_APP_MODE            APP_MODE_LOCAL_LOOPBACK
 
 /* ====================================================================
  * 音频参数配置

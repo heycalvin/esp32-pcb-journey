@@ -5,6 +5,8 @@
 
 #include "driver/i2s_std.h"
 #include "driver/gpio.h"
+#include <freertos/FreeRTOS.h>
+#include <freertos/task.h>
 
 static const char *TAG = "AUDIO_I2S";
 
@@ -31,7 +33,7 @@ esp_err_t audio_i2s_init(void)
 
     i2s_std_config_t tx_std_cfg = {
         .clk_cfg = I2S_STD_CLK_DEFAULT_CONFIG(AUDIO_SAMPLE_RATE),
-        .slot_cfg = I2S_STD_PHILIPS_SLOT_DEFAULT_CONFIG(I2S_DATA_BIT_WIDTH_16BIT, I2S_SLOT_MODE_MONO),
+        .slot_cfg = I2S_STD_PHILIPS_SLOT_DEFAULT_CONFIG(I2S_DATA_BIT_WIDTH_16BIT, I2S_SLOT_MODE_STEREO),
         .gpio_cfg = {
             .mclk = I2S_GPIO_UNUSED,
             .bclk = (gpio_num_t)I2S_SPK_BCLK_PIN,
@@ -45,7 +47,7 @@ esp_err_t audio_i2s_init(void)
             },
         },
     };
-    tx_std_cfg.slot_cfg.slot_mask = I2S_STD_SLOT_LEFT;
+    tx_std_cfg.slot_cfg.slot_mask = I2S_STD_SLOT_BOTH;
 
     ret = i2s_channel_init_std_mode(s_tx_chan, &tx_std_cfg);
     if (ret != ESP_OK) {
@@ -76,7 +78,7 @@ esp_err_t audio_i2s_init(void)
 
     i2s_std_config_t rx_std_cfg = {
         .clk_cfg = I2S_STD_CLK_DEFAULT_CONFIG(AUDIO_SAMPLE_RATE),
-        .slot_cfg = I2S_STD_PHILIPS_SLOT_DEFAULT_CONFIG(I2S_DATA_BIT_WIDTH_16BIT, I2S_SLOT_MODE_MONO),
+        .slot_cfg = I2S_STD_PHILIPS_SLOT_DEFAULT_CONFIG(I2S_DATA_BIT_WIDTH_32BIT, I2S_SLOT_MODE_MONO),
         .gpio_cfg = {
             .mclk = I2S_GPIO_UNUSED,
             .bclk = (gpio_num_t)I2S_MIC_SCK_PIN,
@@ -115,12 +117,31 @@ esp_err_t audio_i2s_read_samples(int16_t *buffer, size_t samples_to_read, size_t
         return ESP_ERR_INVALID_STATE;
     }
 
-    size_t bytes_to_read = samples_to_read * sizeof(int16_t);
+    int32_t raw_buf[AUDIO_SAMPLES_PER_PACKET];
+    size_t to_read = (samples_to_read > AUDIO_SAMPLES_PER_PACKET) ? AUDIO_SAMPLES_PER_PACKET : samples_to_read;
+    size_t bytes_to_read = to_read * sizeof(int32_t);
     size_t bytes_read = 0;
 
-    esp_err_t ret = i2s_channel_read(s_rx_chan, buffer, bytes_to_read, &bytes_read, pdMS_TO_TICKS(timeout_ms));
+    esp_err_t ret = i2s_channel_read(s_rx_chan, raw_buf, bytes_to_read, &bytes_read, pdMS_TO_TICKS(timeout_ms));
+    size_t count = bytes_read / sizeof(int32_t);
+
+    static int32_t s_prev_x = 0;
+    static int32_t s_prev_y = 0;
+
+    for (size_t i = 0; i < count; i++) {
+        // INMP441 是 24-bit 麦克风，高位对齐。右移 14 位映射到标准 16-bit PCM
+        int32_t x = raw_buf[i] >> 14;
+        // 一阶高通 DC 隔离滤波器 (消除硬件直流偏移与自激低频啸叫)
+        int32_t y = x - s_prev_x + (s_prev_y * 127) / 128;
+        s_prev_x = x;
+        s_prev_y = y;
+
+        if (y > 32767) y = 32767;
+        if (y < -32768) y = -32768;
+        buffer[i] = (int16_t)y;
+    }
     if (samples_read) {
-        *samples_read = bytes_read / sizeof(int16_t);
+        *samples_read = count;
     }
     return ret;
 }
@@ -131,12 +152,21 @@ esp_err_t audio_i2s_write_samples(const int16_t *buffer, size_t samples_to_write
         return ESP_ERR_INVALID_STATE;
     }
 
-    size_t bytes_to_write = samples_to_write * sizeof(int16_t);
+    // 将单声道样本复制为立体声 (L=R) 发送给 MAX98357A
+    // 确保 BCLK = 256kHz (满足 MAX98357A 最低 243.2kHz 且 32x LRCLK 要求)
+    int16_t stereo_buf[AUDIO_SAMPLES_PER_PACKET * 2];
+    size_t count = (samples_to_write > AUDIO_SAMPLES_PER_PACKET) ? AUDIO_SAMPLES_PER_PACKET : samples_to_write;
+    for (size_t i = 0; i < count; i++) {
+        stereo_buf[i * 2]     = buffer[i];
+        stereo_buf[i * 2 + 1] = buffer[i];
+    }
+
+    size_t bytes_to_write = count * 2 * sizeof(int16_t);
     size_t bytes_written = 0;
 
-    esp_err_t ret = i2s_channel_write(s_tx_chan, buffer, bytes_to_write, &bytes_written, pdMS_TO_TICKS(timeout_ms));
+    esp_err_t ret = i2s_channel_write(s_tx_chan, stereo_buf, bytes_to_write, &bytes_written, pdMS_TO_TICKS(timeout_ms));
     if (samples_written) {
-        *samples_written = bytes_written / sizeof(int16_t);
+        *samples_written = bytes_written / (2 * sizeof(int16_t));
     }
     return ret;
 }
@@ -144,7 +174,7 @@ esp_err_t audio_i2s_write_samples(const int16_t *buffer, size_t samples_to_write
 void audio_i2s_mute_speaker(void)
 {
     if (!s_tx_chan) return;
-    int16_t silence[AUDIO_SAMPLES_PER_PACKET] = {0};
+    int16_t silence[AUDIO_SAMPLES_PER_PACKET * 2] = {0};
     size_t written = 0;
     i2s_channel_write(s_tx_chan, silence, sizeof(silence), &written, 10);
 }

@@ -47,10 +47,17 @@ static void espnow_recv_cb(const uint8_t *src_mac, const uint8_t *data, int len)
     }
 }
 
+#if ESP_IDF_VERSION >= ESP_IDF_VERSION_VAL(6, 0, 0)
+static void espnow_send_cb(const esp_now_send_info_t *tx_info, esp_now_send_status_t status)
+{
+    // 广播发送通常 status 为 0，此处用于调试
+}
+#else
 static void espnow_send_cb(const uint8_t *mac_addr, esp_now_send_status_t status)
 {
-    // 广播发送通常 status 为 0，此处可用于调试统计
+    // 广播发送通常 status 为 0，此处用于调试
 }
+#endif
 
 esp_err_t espnow_protocol_init(void)
 {

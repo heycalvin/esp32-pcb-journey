@@ -4,13 +4,17 @@ idf_component_register(
         "audio_i2s.c"
         "espnow_protocol.c"
         "ptt_button.c"
+        "status_led.c"
     INCLUDE_DIRS
         "."
     REQUIRES
         esp_wifi
-        esp_now
         nvs_flash
         driver
+        esp_driver_i2s
+        esp_driver_gpio
+        esp_driver_rmt
+        led_strip
         freertos
         esp_ringbuf
         esp_common

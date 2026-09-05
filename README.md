@@ -6,12 +6,25 @@
 
 ```plaintext
 esp32-pcb-journey/
+├── projects/ # 📻 实战项目（ESP-NOW 对讲机等：面包板 MVP → PCB 产品化）
 ├── jlceda/   # 🟢 路线 A：嘉立创 EDA（专业版）—— 小智 AI 语音机器人底板
-├── kicad/    # 🔵 路线 B：KiCad —— LED 最小板 → ESP32（AI 驱动 PCB）
-└── firmware/ # 📦 共享固件（与 EDA 工具无关）
+└── kicad/    # 🔵 路线 B：KiCad —— LED 最小板 → ESP32（AI 驱动 PCB）
 ```
 
-> **两个子目录各自独立、互不交叉**：你想学「开箱即用 + 一键下单打样」走嘉立创路线；你想学「开源 + 可用 AI（Codex/Claude）驱动画板」走 KiCad 路线。选一条开始即可。
+> **两个子目录各自独立、互不交叉**：你想学「开箱即用 + 一键下单打样」走嘉立创路线；你想学「开源 + 可用 AI（Codex/Claude）驱动画板」走 KiCad 路线。
+> **实战项目库**：提供完整的软硬件闭环项目，文档与固件全内聚（从面包板 MVP 到定制 PCB）。
+
+---
+
+## 📻 实战项目：ESP-NOW 无线对讲机 (从面包板 MVP 到定制 PCB)
+
+基于 ESP32 与 ESP-NOW 协议打造超低延迟（<5ms）、免连路由器的无线对讲机，现已完成 **面包板 MVP 完整设计与 ESP-IDF 固件**：
+
+- 🍞 [**面包板 MVP 详细设计与接线图 (MB-102 830孔)**](projects/walkie-talkie/docs/01-breadboard-mvp-design.md)
+- 🛒 [**元器件采购清单与避坑指南 (BOM)**](projects/walkie-talkie/docs/02-bom-shopping-list.md)
+- 📌 [**DOIT ESPS3-32 N16R8 开发板 44 引脚速查**](projects/walkie-talkie/docs/03-doit-esps3-pinout-guide.md)
+- 📦 [**ESP-IDF 固件工程源码**](projects/walkie-talkie/firmware/)
+- 👉 [**查看对讲机项目总览与通关路线**](projects/walkie-talkie/README.md)
 
 ---
 
@@ -80,6 +93,11 @@ flowchart TD
 
 ```plaintext
 esp32-pcb-journey/
+├── projects/                     # 📻 实战项目库
+│   └── walkie-talkie/            # ESP-NOW 无线对讲机（完整闭环）
+│       ├── README.md             # 对讲机项目总览、路线图与技术评估
+│       ├── docs/                 # 面包板 MVP 实物设计指南、引脚手册与 BOM
+│       └── firmware/             # 对讲机 ESP-IDF 原生驱动与 ESP-NOW 协议栈
 ├── jlceda/                       # 🟢 路线 A：嘉立创 EDA（专业版）
 │   ├── book/                     # 核心通俗教程章节 (第 01 ~ 11 章)
 │   ├── hardware/                 # 硬件工程源文件
@@ -91,8 +109,7 @@ esp32-pcb-journey/
 │   ├── book/                     # KiCad 通俗教程章节
 │   ├── hardware/                 # KiCad 工程源文件 (.kicad_sch / .kicad_pcb)
 │   └── docs/                     # KiCad 设计规范与自检清单
-├── firmware/                     # 📦 共享固件（ESP-IDF / Arduino / PlatformIO）
-└── README.md                     # 本文档（双路线总导航）
+└── README.md                     # 本文档（总导航）
 ```
 
 ---

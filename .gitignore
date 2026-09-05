@@ -28,4 +28,6 @@ Desktop.ini
 # 固件编译构建产物 (如有)
 .pio/
 build/
+sdkconfig
 sdkconfig.old
+managed_components/

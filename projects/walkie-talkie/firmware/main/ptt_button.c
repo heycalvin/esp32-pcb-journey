@@ -48,19 +48,6 @@ esp_err_t ptt_button_init(ptt_state_change_cb_t callback)
         return ret;
     }
 
-    // LED 指示灯配置 (可选)
-#if defined(STATUS_LED_GPIO) && (STATUS_LED_GPIO >= 0)
-    gpio_config_t led_conf = {
-        .pin_bit_mask = (1ULL << STATUS_LED_GPIO),
-        .mode = GPIO_MODE_OUTPUT,
-        .pull_up_en = GPIO_PULLUP_DISABLE,
-        .pull_down_en = GPIO_PULLDOWN_DISABLE,
-        .intr_type = GPIO_INTR_DISABLE,
-    };
-    gpio_config(&led_conf);
-    gpio_set_level((gpio_num_t)STATUS_LED_GPIO, 0);
-#endif
-
     xTaskCreatePinnedToCore(ptt_poll_task, "ptt_poll_task", 2048, NULL, 5, NULL, 1);
     ESP_LOGI(TAG, "PTT button initialized on GPIO %d (Active LOW)", PTT_BUTTON_GPIO);
     return ESP_OK;
